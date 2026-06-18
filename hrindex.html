@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hồ sơ nhân viên — The Cake Lab</title>
+<style>
+  :root{
+    --cream:#FCF6ED;
+    --card:#FFFFFF;
+    --brown-deep:#1C2640;
+    --brown-label:#032C7D;
+    --caramel:#F37021;
+    --caramel-dark:#D85F12;
+    --border:#EFE6D4;
+    --border-focus:#F37021;
+    --error:#C0392B;
+    --success-bg:#FBEADF;
+    --success-text:#032C7D;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--cream);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color:var(--brown-deep);
+    padding:32px 16px 80px;
+  }
+  .wrap{
+    max-width:880px;
+    margin:0 auto;
+  }
+  .masthead{
+    text-align:center;
+    margin-bottom:36px;
+  }
+  .masthead .mark{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:46px;height:46px;
+    border-radius:50%;
+    background:var(--caramel);
+    margin-bottom:14px;
+  }
+  .masthead .mark svg{width:24px;height:24px;}
+  .masthead h1{
+    font-family:Georgia,'Times New Roman',serif;
+    font-size:28px;
+    letter-spacing:0.5px;
+    margin:0 0 6px;
+    color:var(--brown-deep);
+  }
+  .masthead p{
+    margin:0 0 16px;
+    font-size:14px;
+    color:#7A88A8;
+  }
+  .ratio-bar{
+    display:flex;
+    width:220px;
+    height:5px;
+    margin:0 auto;
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .ratio-bar span:nth-child(1){background:var(--caramel); width:60%;}
+  .ratio-bar span:nth-child(2){background:var(--brown-label); width:10%;}
+  .ratio-bar span:nth-child(3){background:#E9DCC2; width:30%;}
+  form{
+    background:var(--card);
+    border-radius:16px;
+    box-shadow:0 1px 3px rgba(58,44,30,0.06), 0 8px 24px rgba(58,44,30,0.05);
+    overflow:hidden;
+  }
+  .section{
+    padding:28px 32px;
+    border-bottom:1px solid #F1EAD9;
+  }
+  .section:last-of-type{border-bottom:none;}
+  .section h2{
+    font-size:13px;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+    color:var(--brown-label);
+    margin:0 0 18px;
+    font-weight:700;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .section h2::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:#EFE5D2;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:18px 20px;
+  }
+  .grid.cols-2{grid-template-columns:repeat(2,1fr);}
+  .field{display:flex;flex-direction:column;}
+  .field.full{grid-column:1 / -1;}
+  label{
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:0.6px;
+    text-transform:uppercase;
+    color:var(--brown-label);
+    margin-bottom:7px;
+  }
+  label .req{color:var(--error);margin-left:2px;}
+  input, select{
+    border:1px solid var(--border);
+    border-radius:9px;
+    padding:11px 13px;
+    font-size:14.5px;
+    color:var(--brown-deep);
+    background:#fff;
+    font-family:inherit;
+    transition:border-color .15s, box-shadow .15s;
+    width:100%;
+  }
+  input::placeholder{color:#B7AB97;}
+  input:focus, select:focus{
+    outline:none;
+    border-color:var(--border-focus);
+    box-shadow:0 0 0 3px rgba(201,123,61,0.15);
+  }
+  select:disabled{
+    background:#FAF7F0;
+    color:#B7AB97;
+    cursor:not-allowed;
+  }
+  select{appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'><path d='M1 1l6 6 6-6' stroke='%23032C7D' stroke-width='1.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 13px center;
+    padding-right:34px;
+  }
+  .hint{font-size:12px;color:#A89878;margin-top:5px;}
+  .footer-bar{
+    padding:24px 32px 30px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+  }
+  .status-msg{font-size:13.5px;flex:1;}
+  .status-msg.error{color:var(--error);}
+  .status-msg.success{color:var(--success-text);}
+  button{
+    background:var(--caramel);
+    color:#fff;
+    border:none;
+    border-radius:10px;
+    padding:13px 28px;
+    font-size:14.5px;
+    font-weight:700;
+    letter-spacing:0.3px;
+    cursor:pointer;
+    transition:background .15s, transform .1s;
+    white-space:nowrap;
+  }
+  button:hover{background:var(--caramel-dark);}
+  button:active{transform:translateY(1px);}
+  button:disabled{background:#D9C3A6;cursor:not-allowed;}
+  .success-screen{
+    display:none;
+    background:var(--success-bg);
+    border-radius:16px;
+    padding:48px 32px;
+    text-align:center;
+  }
+  .success-screen.show{display:block;}
+  .success-screen .icon{
+    width:52px;height:52px;
+    border-radius:50%;
+    background:var(--success-text);
+    display:flex;align-items:center;justify-content:center;
+    margin:0 auto 16px;
+  }
+  .success-screen h2{margin:0 0 8px;color:var(--success-text);font-size:20px;}
+  .success-screen p{margin:0 0 22px;color:#4A5A82;font-size:14px;}
+  .success-screen button{background:var(--success-text);}
+  .success-screen button:hover{background:#021E57;}
+  @media (max-width:640px){
+    .grid, .grid.cols-2{grid-template-columns:1fr;}
+    .section{padding:22px 18px;}
+    .footer-bar{flex-direction:column;align-items:stretch;}
+    .footer-bar button{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 19h16M5 19v-6a7 7 0 0 1 14 0v6M9 8c0-1.5 1-2 1-3.5S9 2 9 2M15 8c0-1.5 1-2 1-3.5S15 2 15 2" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <h1>Hồ sơ nhân viên</h1>
+    <p>The Cake Lab · Điền đầy đủ thông tin bên dưới</p>
+    <div class="ratio-bar"><span></span><span></span><span></span></div>
+  </div>
+
+  <form id="employeeForm">
+
+    <div class="section">
+      <h2>Phòng ban &amp; khối</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Mã khối <span class="req">*</span></label>
+          <select id="maKhoi" required><option value="">-- Chọn --</option></select>
+        </div>
+        <div class="field">
+          <label>Khối <span class="req">*</span></label>
+          <select id="khoi" required><option value="">-- Chọn --</option></select>
+        </div>
+        <div class="field">
+          <label>Mã phòng ban</label>
+          <select id="maPhongBan" disabled><option value="">-- Chọn khối trước --</option></select>
+        </div>
+        <div class="field">
+          <label>Phòng ban <span class="req">*</span></label>
+          <select id="phongBan" required disabled><option value="">-- Chọn khối trước --</option></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Thông tin cơ bản</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Mã nhân viên <span class="req">*</span></label>
+          <input id="maNhanVien" required placeholder="NV001">
+        </div>
+        <div class="field">
+          <label>Họ và tên <span class="req">*</span></label>
+          <input id="hoTen" required placeholder="Nguyễn Văn A">
+        </div>
+        <div class="field">
+          <label>Chức vụ <span class="req">*</span></label>
+          <input id="chucVu" required placeholder="Nhân viên">
+        </div>
+        <div class="field">
+          <label>Giới tính <span class="req">*</span></label>
+          <select id="gioiTinh" required>
+            <option value="">-- Chọn --</option>
+            <option value="Nam">Nam</option>
+            <option value="Nữ">Nữ</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Phân loại</label>
+          <select id="phanLoai">
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Thời vụ">Thời vụ</option>
+            <option value="Thực tập">Thực tập</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Trạng thái</label>
+          <select id="trangThai">
+            <option value="Chính thức">Chính thức</option>
+            <option value="Thử việc">Thử việc</option>
+            <option value="Đã nghỉ việc">Đã nghỉ việc</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Liên lạc</h2>
+      <div class="grid cols-2">
+        <div class="field">
+          <label>Số điện thoại <span class="req">*</span></label>
+          <input id="soDienThoai" type="tel" required placeholder="0901234567">
+        </div>
+        <div class="field">
+          <label>Email <span class="req">*</span></label>
+          <input id="email" type="email" required placeholder="nv@thecakelab.vn">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Thông tin cá nhân</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Ngày sinh <span class="req">*</span></label>
+          <input id="ngaySinh" type="date" required>
+        </div>
+        <div class="field">
+          <label>Số CCCD / CMND <span class="req">*</span></label>
+          <input id="soCCCD" required placeholder="036090123456">
+        </div>
+        <div class="field">
+          <label>Ngày cấp CCCD <span class="req">*</span></label>
+          <input id="ngayCapCCCD" type="date" required>
+        </div>
+        <div class="field full">
+          <label>Nơi cấp <span class="req">*</span></label>
+          <input id="noiCap" required placeholder="CA tỉnh/TP...">
+        </div>
+        <div class="field full">
+          <label>Địa chỉ thường trú <span class="req">*</span></label>
+          <input id="diaChiThuongTru" required placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/TP">
+        </div>
+        <div class="field full">
+          <label>Địa chỉ liên hệ <span class="req">*</span></label>
+          <input id="diaChiLienHe" required placeholder="Địa chỉ liên hệ hiện tại">
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Ngày tháng &amp; hợp đồng</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Ngày vào làm việc <span class="req">*</span></label>
+          <input id="ngayVaoLamViec" type="date" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Thông tin khác</h2>
+      <div class="grid">
+        <div class="field">
+          <label>Số sổ BHXH</label>
+          <input id="soSoBHXH" placeholder="0100123456">
+        </div>
+        <div class="field">
+          <label>Mã số thuế</label>
+          <input id="maSoThue" placeholder="8901234567">
+        </div>
+        <div class="field">
+          <label>Số tài khoản <span class="req">*</span></label>
+          <input id="soTaiKhoan" required placeholder="1234567890">
+        </div>
+        <div class="field">
+          <label>Tên tài khoản <span class="req">*</span></label>
+          <input id="tenTaiKhoan" required placeholder="NGUYEN VAN A">
+        </div>
+        <div class="field">
+          <label>Ngân hàng <span class="req">*</span></label>
+          <input id="nganHang" required placeholder="Vietcombank">
+        </div>
+        <div class="field">
+          <label>Họ tên người thân <span class="req">*</span></label>
+          <input id="hoTenNguoiThan" required placeholder="Nguyễn Thị B">
+        </div>
+        <div class="field">
+          <label>SĐT người thân <span class="req">*</span></label>
+          <input id="sdtNguoiThan" type="tel" required placeholder="0901234567">
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bar">
+      <div class="status-msg" id="statusMsg"></div>
+      <button type="submit" id="submitBtn">Gửi thông tin</button>
+    </div>
+
+  </form>
+
+  <div class="success-screen" id="successScreen">
+    <div class="icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h2>Đã gửi thông tin thành công</h2>
+    <p>Hồ sơ nhân viên đã được ghi vào hệ thống.</p>
+    <button id="newFormBtn">Gửi thêm một hồ sơ khác</button>
+  </div>
+
+</div>
+
+<script>
+// ========================================================================
+// THAY ĐỔI DÒNG NÀY: dán URL Web App của Google Apps Script vào đây
+// ========================================================================
+const WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx6-bfWfch-oS29B50lenXVssOB_DSsjEprlZ_U0raxOHtBB8kKVPGTNp6wnvhqpcPV/exec";
+
+// Danh sách khối
+const KHOI_LIST = [
+  { ma: "13", ten: "Khối kinh doanh" },
+  { ma: "14", ten: "Khối văn phòng" },
+  { ma: "15", ten: "Khối sản xuất" }
+];
+
+// Danh sách phòng ban theo khối
+const PHONGBAN_LIST = [
+  { maKhoi:"13", maPB:"11001", ten:"CH 45 Tuệ Tĩnh" },
+  { maKhoi:"13", maPB:"11002", ten:"CH Park 7 Time City" },
+  { maKhoi:"13", maPB:"11700", ten:"CH 71 Hàng Trống" },
+  { maKhoi:"13", maPB:"11701", ten:"CH Yên Phụ" },
+  { maKhoi:"13", maPB:"11003", ten:"CH 3A Phan Bội Châu" },
+  { maKhoi:"13", maPB:"11004", ten:"CH 26 Trung Hoà" },
+  { maKhoi:"13", maPB:"12001", ten:"Bộ phận online" },
+  { maKhoi:"13", maPB:"12002", ten:"Bộ phận B2B" },
+  { maKhoi:"13", maPB:"12003", ten:"Bộ phận Shopeefood" },
+  { maKhoi:"13", maPB:"12004", ten:"Bộ phận GrabFood" },
+  { maKhoi:"13", maPB:"12005", ten:"Bộ phận BeFood" },
+  { maKhoi:"13", maPB:"13001", ten:"Khối vận hành chung kinh doanh" },
+  { maKhoi:"13", maPB:"13002", ten:"Bộ phận kinh doanh bán lẻ" },
+  { maKhoi:"13", maPB:"13003", ten:"Bộ phận Marketing" },
+  { maKhoi:"13", maPB:"13004", ten:"Bộ phận giao hàng" },
+  { maKhoi:"14", maPB:"14001", ten:"Khối vận hành chung văn phòng" },
+  { maKhoi:"14", maPB:"14002", ten:"Ban giám đốc" },
+  { maKhoi:"14", maPB:"14003", ten:"Bộ phận kế toán" },
+  { maKhoi:"14", maPB:"14004", ten:"Bộ phận hành chính nhân sự" },
+  { maKhoi:"15", maPB:"15001", ten:"Bộ phận vận hành chung sản xuất" },
+  { maKhoi:"15", maPB:"15005", ten:"Tổ bánh lạnh - sinh nhật" },
+  { maKhoi:"15", maPB:"15002", ten:"Tổ bánh lạnh - kem nhỏ" },
+  { maKhoi:"15", maPB:"15003", ten:"Tổ bánh nóng" },
+  { maKhoi:"15", maPB:"15004", ten:"Tổ đóng gói" }
+];
+
+const $ = (id) => document.getElementById(id);
+const maKhoiSel = $("maKhoi"), khoiSel = $("khoi"), maPBSel = $("maPhongBan"), pbSel = $("phongBan");
+
+// Khởi tạo dropdown khối
+KHOI_LIST.forEach(k => {
+  maKhoiSel.add(new Option(k.ma, k.ma));
+  khoiSel.add(new Option(k.ten, k.ma)); // value lưu mã khối để đồng bộ
+});
+
+function fillPhongBanOptions(maKhoi){
+  maPBSel.length = 1;
+  pbSel.length = 1;
+  maPBSel.options[0].text = "-- Chọn --";
+  pbSel.options[0].text = "-- Chọn --";
+  const list = PHONGBAN_LIST.filter(p => p.maKhoi === maKhoi);
+  list.forEach(p => {
+    maPBSel.add(new Option(p.maPB, p.maPB));
+    pbSel.add(new Option(p.ten, p.maPB));
+  });
+  const hasKhoi = !!maKhoi;
+  maPBSel.disabled = !hasKhoi;
+  pbSel.disabled = !hasKhoi;
+  if(!hasKhoi){
+    maPBSel.options[0].text = "-- Chọn khối trước --";
+    pbSel.options[0].text = "-- Chọn khối trước --";
+  }
+}
+
+maKhoiSel.addEventListener("change", () => {
+  khoiSel.value = maKhoiSel.value;
+  fillPhongBanOptions(maKhoiSel.value);
+});
+khoiSel.addEventListener("change", () => {
+  maKhoiSel.value = khoiSel.value;
+  fillPhongBanOptions(khoiSel.value);
+});
+maPBSel.addEventListener("change", () => { pbSel.value = maPBSel.value; });
+pbSel.addEventListener("change", () => { maPBSel.value = pbSel.value; });
+
+fillPhongBanOptions(""); // trạng thái ban đầu
+
+// ====== Gửi form ======
+const form = $("employeeForm");
+const statusMsg = $("statusMsg");
+const submitBtn = $("submitBtn");
+const successScreen = $("successScreen");
+
+function getPBTen(maPB){
+  const found = PHONGBAN_LIST.find(p => p.maPB === maPB);
+  return found ? found.ten : "";
+}
+function getKhoiTen(ma){
+  const found = KHOI_LIST.find(k => k.ma === ma);
+  return found ? found.ten : "";
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  statusMsg.textContent = "";
+  statusMsg.className = "status-msg";
+
+  if (!form.checkValidity()){
+    form.reportValidity();
+    return;
+  }
+  if (WEBHOOK_URL.indexOf("DÁN_URL") !== -1){
+    statusMsg.textContent = "Chưa cấu hình URL Web App (WEBHOOK_URL) trong file.";
+    statusMsg.className = "status-msg error";
+    return;
+  }
+
+  const payload = {
+    maKhoi: maKhoiSel.value,
+    khoi: getKhoiTen(maKhoiSel.value),
+    maPhongBan: maPBSel.value,
+    phongBan: getPBTen(pbSel.value),
+    maNhanVien: $("maNhanVien").value.trim(),
+    hoTen: $("hoTen").value.trim(),
+    chucVu: $("chucVu").value.trim(),
+    gioiTinh: $("gioiTinh").value,
+    phanLoai: $("phanLoai").value,
+    trangThai: $("trangThai").value,
+    soDienThoai: $("soDienThoai").value.trim(),
+    email: $("email").value.trim(),
+    ngaySinh: $("ngaySinh").value,
+    soCCCD: $("soCCCD").value.trim(),
+    ngayCapCCCD: $("ngayCapCCCD").value,
+    noiCap: $("noiCap").value.trim(),
+    diaChiThuongTru: $("diaChiThuongTru").value.trim(),
+    diaChiLienHe: $("diaChiLienHe").value.trim(),
+    ngayVaoLamViec: $("ngayVaoLamViec").value,
+    soSoBHXH: $("soSoBHXH").value.trim(),
+    maSoThue: $("maSoThue").value.trim(),
+    soTaiKhoan: $("soTaiKhoan").value.trim(),
+    tenTaiKhoan: $("tenTaiKhoan").value.trim(),
+    nganHang: $("nganHang").value.trim(),
+    hoTenNguoiThan: $("hoTenNguoiThan").value.trim(),
+    sdtNguoiThan: $("sdtNguoiThan").value.trim()
+  };
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Đang gửi...";
+
+  try {
+    // Gửi dạng text/plain để tránh preflight CORS bị Apps Script chặn.
+    await fetch(WEBHOOK_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain;charset=utf-8" },
+      body: JSON.stringify(payload)
+    });
+    form.style.display = "none";
+    successScreen.classList.add("show");
+  } catch (err) {
+    statusMsg.textContent = "Gửi thất bại: " + err.message + " — kiểm tra lại URL Web App hoặc kết nối mạng.";
+    statusMsg.className = "status-msg error";
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Gửi thông tin";
+  }
+});
+
+$("newFormBtn").addEventListener("click", () => {
+  form.reset();
+  fillPhongBanOptions("");
+  form.style.display = "block";
+  successScreen.classList.remove("show");
+});
+</script>
+</body>
+</html>
