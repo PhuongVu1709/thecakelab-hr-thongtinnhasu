@@ -506,7 +506,8 @@ function addrHasValidWard(val) {
 
 function validateAddrField(inputId, errId) {
   const val = $(inputId).value.trim();
-  const invalid = val && !addrHasValidProvince(val) && !addrHasValidWard(val);
+  // Bắt buộc phải có tên tỉnh/thành phố hợp lệ — phường/xã không thể thay thế
+  const invalid = val && !addrHasValidProvince(val);
   $(errId).classList.toggle("show", invalid);
   return !invalid;
 }
